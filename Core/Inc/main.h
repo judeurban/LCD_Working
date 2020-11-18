@@ -62,8 +62,6 @@ void Error_Handler(void);
 #define TS_DO_GPIO_Port GPIOC
 #define T_DIN_Pin GPIO_PIN_3
 #define T_DIN_GPIO_Port GPIOC
-#define Speaker_Out_Pin GPIO_PIN_2
-#define Speaker_Out_GPIO_Port GPIOB
 #define LCD_DC_Pin GPIO_PIN_7
 #define LCD_DC_GPIO_Port GPIOC
 #define LCD_RST_Pin GPIO_PIN_9
