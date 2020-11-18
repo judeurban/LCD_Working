@@ -63,6 +63,8 @@ static void MX_SPI1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+TS_TOUCH_DATA_Def myTS_Handle;
+
 /* USER CODE END 0 */
 
 /**
@@ -97,15 +99,20 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-  ILI9341_Init(&hspi1, LCD_CS_GPIO_Port, LCD_CS_Pin, LCD_DC_GPIO_Port, LCD_DC_Pin, LCD_RST_GPIO_Port, LCD_RST_Pin);
-  ILI9341_setRotation(2);
-  ILI9341_Fill(COLOR_RED);
+    ILI9341_Init(&hspi1, LCD_CS_GPIO_Port, LCD_CS_Pin, LCD_DC_GPIO_Port, LCD_DC_Pin, LCD_RST_GPIO_Port, LCD_RST_Pin);
+    ILI9341_setRotation(2);
+
+    TSC2046_Begin(&hspi2, TS_CS_GPIO_Port, TS_CS_Pin);
+    TSC2046_Calibrate();
+    ILI9341_Fill(COLOR_WHITE);
 
 
- // TSC2046_Begin(&hspi2, TS_CS_GPIO_Port, TS_CS_Pin);
-  //TSC2046_Calibrate();
-  //ILI9341_Fill(COLOR_RED);
+/*
 
+    TSC2046_Begin(&hspi2, TS_CS_GPIO_Port, TS_CS_Pin);
+    TSC2046_Calibrate();
+    ILI9341_Fill(COLOR_RED);
+*/
 
   /* USER CODE END 2 */
 
@@ -114,6 +121,22 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
+
+myTS_Handle = TSC2046_GetTouchData();
+
+
+
+  if(myTS_Handle.isPressed){
+    ILI9341_drawCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_RED);
+  }
+
+/*
+    ILI9341_drawCircle( x, 100, 50, COLOR_RED);
+    x ++;
+    HAL_Delay(50);
+*/
+
 
     /* USER CODE BEGIN 3 */
   }
