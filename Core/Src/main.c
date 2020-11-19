@@ -134,12 +134,12 @@ myTS_Handle = TSC2046_GetTouchData();
 
 
       Speaker_Frequency = (1*myTS_Handle.X) + 0.0;
-	  Speaker_Period = 1000.0 /Speaker_Frequency;
+	    Speaker_Period = 1000.0 /Speaker_Frequency;
 
       HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 1);
-      HAL_Delay(Speaker_Period / 2);
+      HAL_Delay(Speaker_Period);
       HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 0);
-      HAL_Delay(Speaker_Period / 2);
+      HAL_Delay(Speaker_Period);
 
 
 
@@ -338,6 +338,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Speaker_Pin */
+  GPIO_InitStruct.Pin = Speaker_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 }
 
