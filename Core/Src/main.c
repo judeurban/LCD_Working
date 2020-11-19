@@ -64,7 +64,8 @@ static void MX_SPI1_Init(void);
 /* USER CODE BEGIN 0 */
 
 TS_TOUCH_DATA_Def myTS_Handle;
-int Speaker_Period;
+float Speaker_Period;
+float Speaker_Frequency;
 
 /* USER CODE END 0 */
 
@@ -105,7 +106,7 @@ int main(void)
 
     TSC2046_Begin(&hspi2, TS_CS_GPIO_Port, TS_CS_Pin);
     TSC2046_Calibrate();
-    ILI9341_Fill(COLOR_RED);
+    ILI9341_Fill(COLOR_BLACK);
 
 
   /* USER CODE END 2 */
@@ -120,13 +121,46 @@ int main(void)
 myTS_Handle = TSC2046_GetTouchData();
 
 
- 
   if(myTS_Handle.isPressed){
-    ILI9341_drawCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_BLACK);
-    Speaker_Period = 1 / myTS_Handle.X;
-    HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0, 1);
-    HAL_Delay(Speaker_Period);
-    HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0, 0);
+
+ ILI9341_DrawPixel(myTS_Handle.X, myTS_Handle.Y, COLOR_YELLOW); //Draw single pixel to ILI9341
+
+
+	    //no infinity, please
+	      if (myTS_Handle.X == 0){
+	    	  myTS_Handle.X = 1;
+	      }
+
+
+
+      Speaker_Frequency = (1*myTS_Handle.X) + 0.0;
+	  Speaker_Period = 1000.0 /Speaker_Frequency;
+
+      HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 1);
+      HAL_Delay(Speaker_Period / 2);
+      HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 0);
+      HAL_Delay(Speaker_Period / 2);
+
+
+
+
+
+	   // ILI9341_drawCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_NAVY);
+
+
+
+	  char xpos [10];
+	  char ypos [10];
+
+	  itoa(myTS_Handle.X, xpos, 10);
+	  itoa(myTS_Handle.Y, ypos, 10);
+
+
+    //  ILI9341_printText(xpos, 0, 0, COLOR_WHITE, COLOR_BLACK, 3);
+    //  ILI9341_printText(ypos, 0, 100, COLOR_WHITE, COLOR_BLACK, 3);
+
+
+
   }
 
 /*
