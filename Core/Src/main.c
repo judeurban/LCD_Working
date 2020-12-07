@@ -100,15 +100,41 @@ int main(void)
   MX_SPI2_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+
+  uint8_t middley = 110;
+  uint8_t middlex = 100;
   
+  char welcome1[] = "Hello there.";
+  char welcome2[] = "Let's go ahead and";
+  char welcome3[] = "configure the screen so ";
+  char welcome4[] = "it's more accurate";
+  char welcome5[] = "Thank you.";
+  char welcome6[] = "Now, let's begin...";
+
+
     ILI9341_Init(&hspi1, LCD_CS_GPIO_Port, LCD_CS_Pin, LCD_DC_GPIO_Port, LCD_DC_Pin, LCD_RST_GPIO_Port, LCD_RST_Pin);
     ILI9341_setRotation(2);
 
     TSC2046_Begin(&hspi2, TS_CS_GPIO_Port, TS_CS_Pin);
+    ILI9341_Fill(COLOR_RED);
+    ILI9341_printText(welcome1, middlex, middley, COLOR_WHITE, COLOR_RED, 2);
+    HAL_Delay(1000);
+    ILI9341_Fill(COLOR_NAVY);
+    ILI9341_printText(welcome2, middlex -75, middley - 20, COLOR_WHITE, COLOR_NAVY, 2);
+    ILI9341_printText(welcome3, middlex -75, middley, COLOR_WHITE, COLOR_NAVY, 2);
+    ILI9341_printText(welcome4, middlex -75, middley + 20, COLOR_WHITE, COLOR_NAVY, 2);
+ 
     TSC2046_Calibrate();
     ILI9341_Fill(COLOR_BLACK);
 
-int t = 0;
+    ILI9341_printText(welcome5, middlex, middley -10, COLOR_WHITE, COLOR_BLACK, 2);
+    HAL_Delay(1000);
+    ILI9341_printText(welcome6, middlex - 50, middley +10, COLOR_WHITE, COLOR_BLACK, 2);
+
+    ILI9341_drawFastHLine(middlex, middley, 10, COLOR_WHITE);
+
+
+
 
   /* USER CODE END 2 */
 
@@ -127,24 +153,11 @@ myTS_Handle = TSC2046_GetTouchData();
  //ILI9341_fillCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_RED); //Draw circle to ILI9341
 
 
-	    //no infinity, please
-	      if (myTS_Handle.X == 0){
-	    	  myTS_Handle.X = 1;
-	      }
+  //no infinity, please
+    if (myTS_Handle.X == 0){
+      myTS_Handle.X = 1;
+    }
 
-	      Speaker_Frequency = (1*myTS_Handle.X) + 0.0;
-	      Speaker_Frequency = 100;
-		    Speaker_Period = 1000.0 /Speaker_Frequency;
-
-if (t < Speaker_Frequency / 2) {
-      HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 1);
-      t++;
-} else if (t == Speaker_Frequency){
-  t = 0;
-} else if (t > Speaker_Frequency / 2) {
-      HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 0);
-      t++;
-}
 
 
 
