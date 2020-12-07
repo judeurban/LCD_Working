@@ -132,7 +132,8 @@ int main(void)
     ILI9341_printText(welcome6, middlex - 50, middley +10, COLOR_WHITE, COLOR_BLACK, 2);
 
     ILI9341_drawFastHLine(middlex, middley, 10, COLOR_WHITE);
-
+    uint8_t Program_State = 0;
+    uint8_t r = 0;
 
 
 
@@ -150,8 +151,12 @@ myTS_Handle = TSC2046_GetTouchData();
 
   if(myTS_Handle.isPressed){
 
- //ILI9341_fillCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_RED); //Draw circle to ILI9341
+    if(Program_State == 0) {
 
+    ILI9341_Fill(COLOR_BLUE);
+    Program_State = 1;
+
+    }
 
   //no infinity, please
     if (myTS_Handle.X == 0){
@@ -159,7 +164,7 @@ myTS_Handle = TSC2046_GetTouchData();
     }
 
 
-
+  ILI9341_fillCircle(myTS_Handle.X, myTS_Handle.Y, 3, COLOR_BLACK);
 
 
 
