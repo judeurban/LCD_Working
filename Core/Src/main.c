@@ -108,6 +108,7 @@ int main(void)
     TSC2046_Calibrate();
     ILI9341_Fill(COLOR_BLACK);
 
+int t = 0;
 
   /* USER CODE END 2 */
 
@@ -123,7 +124,7 @@ myTS_Handle = TSC2046_GetTouchData();
 
   if(myTS_Handle.isPressed){
 
- ILI9341_DrawPixel(myTS_Handle.X, myTS_Handle.Y, COLOR_YELLOW); //Draw single pixel to ILI9341
+ //ILI9341_fillCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_RED); //Draw circle to ILI9341
 
 
 	    //no infinity, please
@@ -131,43 +132,27 @@ myTS_Handle = TSC2046_GetTouchData();
 	    	  myTS_Handle.X = 1;
 	      }
 
+	      Speaker_Frequency = (1*myTS_Handle.X) + 0.0;
+	      Speaker_Frequency = 100;
+		    Speaker_Period = 1000.0 /Speaker_Frequency;
 
-
-      Speaker_Frequency = (1*myTS_Handle.X) + 0.0;
-	    Speaker_Period = 1000.0 /Speaker_Frequency;
-
+if (t < Speaker_Frequency / 2) {
       HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 1);
-      HAL_Delay(Speaker_Period);
+      t++;
+} else if (t == Speaker_Frequency){
+  t = 0;
+} else if (t > Speaker_Frequency / 2) {
       HAL_GPIO_WritePin(GPIOC, Speaker_Pin, 0);
-      HAL_Delay(Speaker_Period);
+      t++;
+}
 
 
 
-
-
-	   // ILI9341_drawCircle(myTS_Handle.X, myTS_Handle.Y, 10, COLOR_NAVY);
-
-
-
-	  char xpos [10];
-	  char ypos [10];
-
-	  itoa(myTS_Handle.X, xpos, 10);
-	  itoa(myTS_Handle.Y, ypos, 10);
-
-
-    //  ILI9341_printText(xpos, 0, 0, COLOR_WHITE, COLOR_BLACK, 3);
-    //  ILI9341_printText(ypos, 0, 100, COLOR_WHITE, COLOR_BLACK, 3);
 
 
 
   }
 
-/*
-    ILI9341_drawCircle( x, 100, 50, COLOR_RED);
-    x ++;
-    HAL_Delay(50);
-*/
 
 
     /* USER CODE BEGIN 3 */
