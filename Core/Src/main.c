@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "image1.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -57,7 +58,8 @@ static void MX_GPIO_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
-
+uint8_t DataSelector();
+uint8_t FrequencySelector();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -66,6 +68,13 @@ static void MX_SPI1_Init(void);
 TS_TOUCH_DATA_Def myTS_Handle;
 float Speaker_Period;
 float Speaker_Frequency;
+float SineRegion = 60;
+float TriangleRegion = 120;
+float RampRegion = 180;
+float SquareRegion = 240;
+float FrequencyDivider = 10;
+float FrequencyInterval = 0;
+
 
 /* USER CODE END 0 */
 
@@ -103,6 +112,8 @@ int main(void)
 
   uint8_t middley = 110;
   uint8_t middlex = 100;
+  uint8_t Q = 0;
+  FrequencyInterval = 320/FrequencyDivider;
   
   char welcome1[] = "Hello there.";
   char welcome2[] = "Let's go ahead and";
@@ -111,6 +122,10 @@ int main(void)
   char welcome5[] = "Thank you.";
   char welcome6[] = "Now, let's begin...";
 
+    char wave1[] = "sine";
+    char wave2[] = "triangle";
+    char wave3[] = "saw";
+    char wave4[] = "square";
 
     ILI9341_Init(&hspi1, LCD_CS_GPIO_Port, LCD_CS_Pin, LCD_DC_GPIO_Port, LCD_DC_Pin, LCD_RST_GPIO_Port, LCD_RST_Pin);
     ILI9341_setRotation(2);
@@ -132,8 +147,26 @@ int main(void)
     ILI9341_printText(welcome6, middlex - 50, middley +10, COLOR_WHITE, COLOR_BLACK, 2);
 
     ILI9341_drawFastHLine(middlex, middley, 10, COLOR_WHITE);
+
+    void mainbg() {
+    ILI9341_Fill_Rect(0, 0, 320, 60, COLOR_RED);
+    ILI9341_Fill_Rect(0, 60, 320, 120, COLOR_ORANGE);
+    ILI9341_Fill_Rect(0, 120, 320, 180, COLOR_PURPLE);
+    ILI9341_Fill_Rect(0, 180, 320, 240, COLOR_BLUE);
+
+    ILI9341_printText(wave1, 5, 20, COLOR_WHITE, COLOR_RED, 2);
+    ILI9341_printText(wave2, 5, 80, COLOR_WHITE, COLOR_ORANGE, 2);
+    ILI9341_printText(wave3, 5, 140, COLOR_WHITE, COLOR_PURPLE, 2);
+    ILI9341_printText(wave4, 5, 200, COLOR_WHITE, COLOR_BLUE, 2);
+
+    };
+
+
+    mainbg();
+
     uint8_t Program_State = 0;
     uint8_t r = 0;
+
 
 
 
@@ -148,28 +181,23 @@ int main(void)
 
 myTS_Handle = TSC2046_GetTouchData();
 
-
-  if(myTS_Handle.isPressed){
-
-    if(Program_State == 0) {
-
-    ILI9341_Fill(COLOR_BLUE);
-    Program_State = 1;
-
-    }
+  if(myTS_Handle.isPressed == 1){
 
   //no infinity, please
     if (myTS_Handle.X == 0){
       myTS_Handle.X = 1;
     }
 
-
   ILI9341_fillCircle(myTS_Handle.X, myTS_Handle.Y, 3, COLOR_BLACK);
+  //uint8_t Q = 0;
+  Q = DataSelector();
 
+Program_State = 1;
 
-
-
-  }
+  } else if(myTS_Handle.isPressed == 0 && Program_State == 1) {
+    mainbg();
+    Program_State = 0;
+    }
 
 
 
@@ -222,7 +250,7 @@ void SystemClock_Config(void)
   }
 }
 
-/**
+/*
   * @brief SPI1 Initialization Function
   * @param None
   * @retval None
@@ -352,6 +380,37 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+uint8_t FrequencySelector()
+{
+  for(uint8_t i = 0; i < FrequencyDivider; i++)
+  {
+    if(myTS_Handle.X >= (i*FrequencyInterval) && myTS_Handle.X <= ((i+1)*FrequencyInterval))
+    {
+      return i;
+    }
+  }
+}
+uint8_t DataSelector()
+{
+  uint8_t j = 0;
+  if(myTS_Handle.Y > 0.0 && myTS_Handle.Y <= SineRegion)
+  {
+    j = FrequencySelector();
+  }
+  if(myTS_Handle.Y > SineRegion && myTS_Handle.Y <= TriangleRegion)
+  {
+    j = FrequencySelector() + 10;
+  }
+  if(myTS_Handle.Y > TriangleRegion && myTS_Handle.Y <= RampRegion)
+  {
+    j = FrequencySelector() + 20;
+  }
+  if(myTS_Handle.Y > RampRegion && myTS_Handle.Y <= SquareRegion)
+  {
+    j = FrequencySelector() + 30;
+  }
+  return j;
+}
 
 /* USER CODE END 4 */
 
